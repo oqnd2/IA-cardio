@@ -3,18 +3,22 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 
-# Iniciar la aplicación Flask
 app = Flask(__name__)
 
-# Cargar el dataset (solo para obtener el mapeo de recomendaciones)
-dataset = pd.read_csv("dataset.csv")
+try:
+    print("📂 Cargando el dataset...")
+    dataset = pd.read_csv("dataset.csv")
+    print("✅ Dataset cargado con éxito")
 
-# Mapear recomendaciones a índices
-recommendation_to_index = {rec: i for i, rec in enumerate(dataset["recommendation"].unique())}
-index_to_recommendation = {i: rec for rec, i in recommendation_to_index.items()}
+    recommendation_to_index = {rec: i for i, rec in enumerate(dataset["recommendation"].unique())}
+    index_to_recommendation = {i: rec for rec, i in recommendation_to_index.items()}
 
-# Cargar el modelo entrenado en lugar de reentrenarlo cada vez
-model = tf.keras.models.load_model("modelo_recomendaciones.h5")
+    print("📂 Cargando modelo...")
+    model = tf.keras.models.load_model("modelo_recomendaciones.h5")
+    print("✅ Modelo cargado con éxito")
+
+except Exception as e:
+    print(f"❌ ERROR al cargar el modelo: {e}")
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
@@ -23,7 +27,7 @@ def recommend():
         bpm_value = np.array([[data["bpm"]]])  # Convertir a array para el modelo
 
         prediction = model.predict(bpm_value)
-        recommendation_index = np.argmax(prediction)  # Obtener la recomendación más probable
+        recommendation_index = np.argmax(prediction)
         recommendation_text = index_to_recommendation[recommendation_index]
 
         return jsonify({"bpm": data["bpm"], "recommendation": recommendation_text})

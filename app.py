@@ -15,10 +15,10 @@ try:
 
     print("📂 Cargando modelo...")
     model = tf.keras.models.load_model("modelo_recomendaciones.h5")
-    print("✅ Modelo cargado con éxito")
+    print("Modelo cargado con éxito")
 
 except Exception as e:
-    print(f"❌ ERROR al cargar el modelo: {e}")
+    print(f"ERROR al cargar el modelo: {e}")
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
